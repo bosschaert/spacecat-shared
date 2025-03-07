@@ -159,7 +159,7 @@ export default async function getAcls({
     acls,
     aclEntities: {
       model: ['organization', 'site'], // TODO Flip
-      spacecatScopes: ['xxxyyyzzz'],
+      // spacecatScopes: ['xxxyyyzzz'],
     },
   };
 }

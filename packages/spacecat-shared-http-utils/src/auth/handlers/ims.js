@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { createDataAccess } from '@adobe/spacecat-shared-data-access';
 import { hasText } from '@adobe/spacecat-shared-utils';
 import {
   createLocalJWKSet,
@@ -115,8 +116,41 @@ export default class AdobeImsHandler extends AbstractHandler {
     return payload;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async #fillModel(aclAccess) {
+    console.log('§§§ in fillModel role:', aclAccess.Role);
+    console.log('§§§ in fillModel site:', aclAccess.Site);
+    console.log('§§§ in fillModel acl:', aclAccess.Acl);
+    const role1 = await aclAccess.Role.create({
+      imsOrgId: 'F4646ED9626926AA0A49420E',
+      identity: 'imsID:374B0263626BA96D0A49421B@f71261f462692705494128.e',
+      name: 'mysite-importer',
+    });
+    const role2 = await aclAccess.Role.create({
+      imsOrgId: 'F4646ED9626926AA0A49420E',
+      identity: 'imsID:374B0263626BA96D0A49421B@f71261f462692705494128.e',
+      name: 'test-account-writer',
+    });
+    console.log('§§§ Created roles:', role1, role2);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async #getAclAccess(context) {
+    console.log('§§§ Getting ACL Access');
+
+    const { log } = context;
+    return createDataAccess({
+      tableNameData: 'spacecat-services-rbac-dev',
+    }, log);
+  }
+
   async checkAuth(request, context) {
-    console.log('§§§ context in ims:', JSON.stringify(context));
+    console.log('§§§ Get ACL Access via model');
+    const aclAccess = await this.#getAclAccess(context);
+    console.log('§§§ Done getting ACL Access via model');
+    await this.#fillModel(aclAccess);
+
+    // console.log('§§§ context in ims:', JSON.stringify(context));
     const token = getBearerToken(context);
     if (!hasText(token)) {
       this.log('No bearer token provided', 'debug');
