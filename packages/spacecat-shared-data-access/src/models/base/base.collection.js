@@ -388,7 +388,6 @@ class BaseCollection {
       }
 
       this.#invalidateCache();
-
       this.log.info(`Created item for [${this.entityName}]`);
 
       await this.#onCreate(instance);

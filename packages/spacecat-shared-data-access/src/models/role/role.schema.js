@@ -16,7 +16,6 @@ import SchemaBuilder from '../base/schema.builder.js';
 
 import Role from './role.model.js';
 import RoleCollection from './role.collection.js';
-import Organization from '../organization/organization.model.js';
 
 /*
 Schema Doc: https://electrodb.dev/en/modeling/schema/
@@ -25,11 +24,12 @@ Indexes Doc: https://electrodb.dev/en/modeling/indexes/
  */
 
 const schema = new SchemaBuilder(Role, RoleCollection)
+  // it's just a to-many reference
   // .addReference('has_many', 'Acls')
   .addAttribute('imsOrgId', {
     type: 'string',
     required: true,
-    validate: (value) => Organization.IMS_ORG_ID_REGEX.test(value),
+    // validate: (value) => Organization.IMS_ORG_ID_REGEX.test(value),
   })
   .addAttribute('identity', {
     type: 'string',

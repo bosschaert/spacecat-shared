@@ -17,7 +17,7 @@ import SchemaBuilder from '../base/schema.builder.js';
 
 import Acl from './acl.model.js';
 import AclCollection from './acl.collection.js';
-import Organization from '../organization/organization.model.js';
+// import Organization from '../organization/organization.model.js';
 
 /*
 Schema Doc: https://electrodb.dev/en/modeling/schema/
@@ -26,11 +26,15 @@ Indexes Doc: https://electrodb.dev/en/modeling/indexes/
  */
 
 const schema = new SchemaBuilder(Acl, AclCollection)
-  .addReference('belongs_to', 'Role')
+  // .addReference('belongs_to', 'Role')
+  .addAttribute('roleName', {
+    type: 'string',
+    required: true,
+  })
   .addAttribute('imsOrgId', {
     type: 'string',
     required: true,
-    validate: (value) => Organization.IMS_ORG_ID_REGEX.test(value),
+    // validate: (value) => Organization.IMS_ORG_ID_REGEX.test(value),
   })
   .addAttribute('acls', {
     type: 'list',
@@ -50,6 +54,10 @@ const schema = new SchemaBuilder(Acl, AclCollection)
         },
       },
     },
-  });
+  })
+  .addIndex(
+    { composite: ['imsOrgId'] },
+    { composite: ['roleName'] },
+  );
 
 export default schema.build();
