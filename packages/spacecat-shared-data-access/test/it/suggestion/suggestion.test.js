@@ -33,6 +33,7 @@ describe('Suggestion IT', async () => {
   before(async () => {
     sampleData = await seedDatabase();
 
+    // ACLs needed to make this test pass
     const acls = [{
       acl: [{
         actions: ['R'],
