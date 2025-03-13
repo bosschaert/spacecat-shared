@@ -37,7 +37,35 @@ const resetDatabase = async () => {
 };
 
 const seedV2Fixtures = async () => {
-  const dataAccess = getDataAccess();
+  // ACLs needed for seeding
+  const acls = [{
+    acl: [{
+      actions: ['C'],
+      path: '/apiKey/*',
+    }, {
+      actions: ['C'],
+      path: '/configuration/*',
+    }, {
+      actions: ['C'],
+      path: '/importJob/**',
+    }, {
+      actions: ['C', 'R'],
+      path: '/site/**',
+    }, {
+      actions: ['C', 'R', 'U'],
+      path: '/opportunity/**',
+    }, {
+      actions: ['C'],
+      path: '/organization/**',
+    }, {
+      actions: ['C'],
+      path: '/latestAudit/*',
+    },
+    ],
+  }];
+
+  const aclCtx = { acls };
+  const dataAccess = getDataAccess({ aclCtx });
   const sampleData = {};
 
   for (const [key, data] of Object.entries(fixtures)) {
