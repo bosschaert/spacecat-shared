@@ -62,7 +62,7 @@ const seedV2Fixtures = async () => {
       actions: ['C'],
       path: '/role/*',
     }, {
-      actions: ['C'],
+      actions: ['C', 'R'],
       path: '/latestAudit/*',
     },
     ],
