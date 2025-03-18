@@ -54,9 +54,6 @@ describe('Site IT', async () => {
         path: '/organization/**', // Sites are under organization
       }, {
         actions: ['R'],
-        path: '/site/**',
-      }, {
-        actions: ['R'],
         path: '/latestAudit/*',
       }],
     }];
