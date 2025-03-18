@@ -43,6 +43,7 @@ export const TEST_DA_CONFIG = {
   tableNameKeyEvents: 'spacecat-services-key-events',
   tableNameLatestAudits: 'spacecat-services-latest-audits',
   tableNameOrganizations: 'spacecat-services-organizations',
+  tableNameRole: 'spacecat-services-roles',
   tableNameSiteCandidates: 'spacecat-services-site-candidates',
   tableNameSiteTopPages: 'spacecat-services-site-top-pages',
   tableNameSites: 'spacecat-services-sites',

@@ -29,6 +29,7 @@ const resetDatabase = async () => {
     TEST_DA_CONFIG.tableNameKeyEvents,
     TEST_DA_CONFIG.tableNameLatestAudits,
     TEST_DA_CONFIG.tableNameOrganizations,
+    TEST_DA_CONFIG.tableNameRoles,
     TEST_DA_CONFIG.tableNameSiteCandidates,
     TEST_DA_CONFIG.tableNameSiteTopPages,
     TEST_DA_CONFIG.tableNameSites,
@@ -55,8 +56,11 @@ const seedV2Fixtures = async () => {
       actions: ['C', 'R', 'U'],
       path: '/opportunity/**',
     }, {
-      actions: ['C'],
+      actions: ['C', 'R'],
       path: '/organization/**',
+    }, {
+      actions: ['C'],
+      path: '/role/*',
     }, {
       actions: ['C'],
       path: '/latestAudit/*',
