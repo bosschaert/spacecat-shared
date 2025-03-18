@@ -39,78 +39,48 @@ async function getDBAccess(log, tableName = 'spacecat-services-rbac-dev') {
 
 async function getDBRoles(dbAccess, {
   imsUserId, imsOrgId, imsGroups, apiKey,
-}) {
-  const idents = {
-    userident: `imsID:${imsUserId}`,
-    orgident: `imsOrgID:${imsOrgId}`,
-  };
+}, log) {
+  const idents = [
+    `imsID:${imsUserId}`,
+    `imsOrgID:${imsOrgId}`,
+  ];
 
   if (imsGroups) {
     for (const [org, groups] of Object.entries(imsGroups)) {
-      if (!(org.split('@')[0] === imsOrgId)) {
+      if (org !== imsOrgId) {
         // eslint-disable-next-line no-continue
         continue;
       }
 
-      let grpCnt = 0;
       for (const group of groups.groups) {
-        idents[`grp${grpCnt}`] = `imsOrgID/groupID:${imsOrgId}/${group.groupid}`;
-        grpCnt += 1;
+        idents.push(`imsOrgID/groupID:${imsOrgId}/${group.groupid}`);
       }
     }
   }
 
   if (apiKey) {
-    idents.apikey = `apiKeyID:${apiKey}`;
+    idents.push(`apiKeyID:${apiKey}`);
   }
 
-  const roles = [];
-
-  console.log('§§§ Looking up Roles for these identities:', JSON.stringify(idents));
-  // TODO avoid using a loop, us a custom query instead
-  for (const identity of Object.values(idents)) {
-    // eslint-disable-next-line no-await-in-loop
-    const r = await dbAccess.Role.findByIndexKeys({
-      imsOrgId,
-      identity,
-    });
-    if (r) {
-      roles.push(r.getName());
-    }
-  }
-
-  console.log('§§§ Found roles:', JSON.stringify(roles));
-
-  // const roles2 = await dbAccess.Role.allRolesByIdentities(imsOrgId, Object.values(idents));
-  // console.log('§§§ Found roles2:', JSON.stringify(roles2));
-  return roles;
+  const roles = await dbAccess.Role.allRolesByIdentities(imsOrgId, idents);
+  const roleNames = roles.map((r) => r.name);
+  log.debug(`Found role names for ${imsOrgId} identities ${idents}: ${roleNames}`);
+  return roleNames;
 }
 
 async function getDBACLs(dbAccess, {
   imsOrgId, roles,
-}) {
-  const acls = [];
-
-  console.log('§§§ Looking up ACLs for these roles:', JSON.stringify(roles));
-  // TODO avoid using a loop, us a custom query instead
-  for (const role of roles) {
-    // eslint-disable-next-line no-await-in-loop
-    const acl = await dbAccess.Acl.findByIndexKeys({
-      imsOrgId,
-      roleName: role,
-    });
-    if (acl) {
-      const roleAcl = acl.getAcls();
-      roleAcl.sort(pathSorter);
-      acls.push({
-        role,
-        acl: roleAcl,
-      });
-    }
-  }
-  console.log('§§§ Found ACLs:', JSON.stringify(acls));
-
-  return acls;
+}, log) {
+  const acls = await dbAccess.Acl.allAclsByRoleNames(imsOrgId, roles);
+  const roleAcls = acls.map((a) => {
+    a.acls.sort(pathSorter);
+    return {
+      role: a.roleName,
+      acl: a.acls,
+    };
+  });
+  log.debug((`Found ACLs for ${imsOrgId} roles ${roles}: ${roleAcls}`));
+  return roleAcls;
 }
 
 export default async function getAcls({
@@ -122,19 +92,18 @@ export default async function getAcls({
 
   // Normally there is only 1 organization, but the API returns an array so
   // we'll iterate over it and use all the ACLs we find.
-  for (const orgid of imsOrgs) {
-    const imsOrgId = orgid.split('@')[0];
+  for (const imsOrgId of imsOrgs) {
     // eslint-disable-next-line no-await-in-loop
     const roles = await getDBRoles(dbAccess, {
       imsUserId, imsOrgId, imsGroups, apiKey,
-    });
+    }, log);
     if (!roles) {
       // eslint-disable-next-line no-continue
       continue;
     }
 
     // eslint-disable-next-line no-await-in-loop
-    const aclList = await getDBACLs(dbAccess, { imsOrgId, roles });
+    const aclList = await getDBACLs(dbAccess, { imsOrgId, roles }, log);
     acls.push(...aclList);
   }
 

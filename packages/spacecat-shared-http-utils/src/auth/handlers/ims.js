@@ -152,7 +152,7 @@ export default class AdobeImsHandler extends AbstractHandler {
   // eslint-disable-next-line class-methods-use-this
   async #fillModel(aclAccess) {
     const r1 = await this.#addSampleRoles(aclAccess, {
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       identity: 'imsID:374B0263626BA96D0A49421B@f71261f462692705494128.e',
       name: 'mysite-importer',
     });
@@ -164,7 +164,7 @@ export default class AdobeImsHandler extends AbstractHandler {
 
     await this.#addSampleAcls(aclAccess, {
       roleName: 'mysite-importer',
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       acls: [
         {
           actions: ['C', 'R', 'U', 'D'],
@@ -174,7 +174,7 @@ export default class AdobeImsHandler extends AbstractHandler {
     });
 
     await this.#addSampleRoles(aclAccess, {
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       identity: 'imsID:374B0263626BA96D0A49421B@f71261f462692705494128.e',
       name: 'test-account-writer',
     }, true);
@@ -182,7 +182,7 @@ export default class AdobeImsHandler extends AbstractHandler {
 
     await this.#addSampleAcls(aclAccess, {
       roleName: 'test-account-writer',
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       acls: [
         {
           actions: ['C', 'R', 'U', 'D'],
@@ -195,15 +195,15 @@ export default class AdobeImsHandler extends AbstractHandler {
       ],
     });
     await this.#addSampleRoles(aclAccess, {
-      imsOrgId: 'F4646ED9626926AA0A49420E',
-      identity: 'imsOrgID:F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
+      identity: 'imsOrgID:F4646ED9626926AA0A49420E@AdobeOrg',
       name: 'test-account-reader',
     }, true);
     console.log('§§§ New role created r3');
 
     await this.#addSampleAcls(aclAccess, {
       roleName: 'test-account-reader',
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       acls: [
         {
           actions: ['R'],
@@ -221,17 +221,17 @@ export default class AdobeImsHandler extends AbstractHandler {
     });
 
     await this.#addSampleRoles(aclAccess, {
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       identity: 'imsOrgID/groupID:F4646ED9626926AA0A49420E/560518161',
       name: 'another-account-reader',
     }, true);
     await this.#addSampleRoles(aclAccess, {
-      imsOrgId: 'F4646ED9626926AA0A49420E',
+      imsOrgId: 'F4646ED9626926AA0A49420E@AdobeOrg',
       identity: 'imsOrgID/groupID:F4646ED9626926AA0A49420E/560518161',
       name: 'another-account-writer',
     }, true);
     await this.#addSampleRoles(aclAccess, {
-      imsOrgId: '43101FC962E3B1BF0A494217',
+      imsOrgId: '43101FC962E3B1BF0A494217@AdobeOrg',
       identity: 'apiKeyID:7b0784db-e05b-4329-acba-84575313fb81',
       name: 'test-account-reader',
     }, true);
@@ -239,7 +239,7 @@ export default class AdobeImsHandler extends AbstractHandler {
 
     await this.#addSampleAcls(aclAccess, {
       roleName: 'test-account-reader',
-      imsOrgId: '43101FC962E3B1BF0A494217',
+      imsOrgId: '43101FC962E3B1BF0A494217@AdobeOrg',
       acls: [
         {
           actions: ['R'],
@@ -260,17 +260,22 @@ export default class AdobeImsHandler extends AbstractHandler {
     const { log } = context;
     return createDataAccess({
       tableNameData: 'spacecat-services-rbac-dev',
+      aclCtx: {
+        aclEntities: {
+          exclude: ['acl', 'role'],
+        },
+      },
     }, log);
   }
 
   async checkAuth(request, context) {
     // This is only temporarily to put some things in the database
-    // /* */
+    /* */
     // console.log('§§§ Get ACL Access via model');
     // const aclAccess = await this.#getAclAccess(context);
     // console.log('§§§ Done getting ACL Access via model');
     // await this.#fillModel(aclAccess);
-    // /* */
+    /* */
 
     // console.log('§§§ context in ims:', JSON.stringify(context));
     const token = getBearerToken(context);
@@ -285,7 +290,7 @@ export default class AdobeImsHandler extends AbstractHandler {
       const acls = await getAcls({
         imsUserId: imsProfile.userId,
         imsOrgs: imsProfile.organizations,
-        imsGroups: imsProfile.orgDetails,
+        // imsGroups: imsProfile.orgDetails, - right now no way to find these
       }, context.log); // TODO pass config
 
       const config = loadConfig(context);
