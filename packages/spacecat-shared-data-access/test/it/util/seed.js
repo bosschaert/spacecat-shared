@@ -41,10 +41,10 @@ const seedV2Fixtures = async () => {
   // ACLs needed for seeding
   const acls = [{
     acl: [{
-      actions: ['C'],
+      actions: ['C', 'R'],
       path: '/apiKey/*',
     }, {
-      actions: ['C'],
+      actions: ['C', 'R'],
       path: '/configuration/*',
     }, {
       actions: ['C'],
