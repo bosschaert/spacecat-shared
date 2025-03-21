@@ -12,24 +12,28 @@
 
 const roles = [
   {
-    imsOrgId: 'DAADAADAA@AdobeOrg',
-    identity: 'imsOrgID:DAADAADAA@AdobeOrg',
+    roleId: '1d6b2f29-4d2d-405e-aad6-1f62e6933c39',
     name: 'foo-role',
+    imsOrgId: 'DAADAADAA@AdobeOrg',
+    acl: [],
   },
   {
-    imsOrgId: 'DAADAADAA@AdobeOrg',
-    identity: 'imsOrgID:DAADAADAA@AdobeOrg',
+    roleId: '2d6b2f29-4d2d-405e-aad6-1f62e6933c39',
     name: 'bar-role',
-  },
-  {
     imsOrgId: 'DAADAADAA@AdobeOrg',
-    identity: 'imsID:1234@5678.e',
-    name: 'far-role',
+    acl: [],
   },
   {
-    imsOrgId: '12345678@AdobeOrg',
-    identity: 'imsID:1234@5678.e',
+    roleId: '3d6b2f29-4d2d-405e-aad6-1f62e6933c39',
+    name: 'far-role',
+    imsOrgId: 'DAADAADAA@AdobeOrg',
+    acl: [],
+  },
+  {
+    roleId: '4d6b2f29-4d2d-405e-aad6-1f62e6933c39',
     name: 'tar-role',
+    imsOrgId: '12345678@AdobeOrg',
+    acl: [],
   },
 ];
 

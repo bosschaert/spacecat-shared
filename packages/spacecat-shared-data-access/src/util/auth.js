@@ -44,11 +44,13 @@ function prepSingleStarWildcard(entityPath, permPath) {
  * @returns { Object.trace } - the acl entry that matched the path.
  */
 function getPermissions(path, acl) {
+  console.log('§§§ get permissions for ', path, ' in ', JSON.stringify(acl));
   if (!acl) {
     return { actions: [] };
   }
 
   const match = acl.find((p) => {
+    console.log('§§§ acl canidate ', p);
     const pp = p.path;
     const ep = prepSingleStarWildcard(path, pp);
 
@@ -80,7 +82,9 @@ function getPermissions(path, acl) {
 export function hasPermisson(entityPath, perm, aclCtx, log) {
   const allActions = [];
   const traces = [];
+  console.log('§§§ hasPermission aclCtx:', JSON.stringify(aclCtx));
   aclCtx.acls.forEach((a) => {
+    console.log('§§§ hasPermission acl element:', JSON.stringify(a));
     const { actions, trace } = getPermissions(entityPath, a.acl);
     allActions.push(...actions);
     if (actions.includes(perm)) {

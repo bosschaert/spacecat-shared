@@ -31,7 +31,7 @@ async function getDBAccess(log, tableName = 'spacecat-services-rbac-dev') {
     tableNameData: tableName,
     aclCtx: {
       aclEntities: {
-        exclude: ['acl', 'role'],
+        exclude: ['role', 'roleMember'],
       },
     },
   }, log);
@@ -62,25 +62,11 @@ async function getDBRoles(dbAccess, {
     idents.push(`apiKeyID:${apiKey}`);
   }
 
-  const roles = await dbAccess.Role.allRolesByIdentities(imsOrgId, idents);
-  const roleNames = roles.map((r) => r.name);
-  log.debug(`Found role names for ${imsOrgId} identities ${idents}: ${roleNames}`);
-  return roleNames;
-}
-
-async function getDBACLs(dbAccess, {
-  imsOrgId, roles,
-}, log) {
-  const acls = await dbAccess.Acl.allAclsByRoleNames(imsOrgId, roles);
-  const roleAcls = acls.map((a) => {
-    a.acls.sort(pathSorter);
-    return {
-      role: a.roleName,
-      acl: a.acls,
-    };
-  });
-  log.debug((`Found ACLs for ${imsOrgId} roles ${roles}: ${JSON.stringify(roleAcls)}`));
-  return roleAcls;
+  const roleMemberships = await dbAccess.RoleMember.allRoleMembershipByIdentities(imsOrgId, idents);
+  const roles = await Promise.all(roleMemberships.map(async (rm) => rm.getRole()));
+  const roleNames = roles.map((r) => r.getName());
+  log.debug(`Found role membership names for ${imsOrgId} identities ${idents}: ${roleNames}`);
+  return roles;
 }
 
 export default async function getAcls({
@@ -102,9 +88,17 @@ export default async function getAcls({
       continue;
     }
 
-    // eslint-disable-next-line no-await-in-loop
-    const aclList = await getDBACLs(dbAccess, { imsOrgId, roles }, log);
-    acls.push(...aclList);
+    roles.forEach((r) => {
+      const acl = [...r.getAcl()];
+      acl.sort(pathSorter);
+      const entry = {
+        role: r.getName(),
+        acl: r.getAcl(),
+      };
+
+      acls.push(entry);
+    });
+    console.log('§§§ acls:', JSON.stringify(acls));
   }
 
   return {

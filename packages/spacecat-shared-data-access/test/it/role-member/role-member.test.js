@@ -16,27 +16,36 @@ import { expect } from 'chai';
 import { getDataAccess } from '../util/db.js';
 import { seedDatabase } from '../util/seed.js';
 
-describe('Role IT', async () => {
-  let Role;
+describe('RoleMember IT', async () => {
+  let RoleMember;
 
   before(async () => {
     await seedDatabase();
 
-    const acls = [];
+    const acls = [{
+      acl: [{
+        actions: ['R'],
+        path: '/role/*/roleMember/*',
+      }, {
+        actions: ['R'],
+        path: '/role/*',
+      }],
+    }];
     const aclCtx = { acls };
     const dataAccess = getDataAccess({ aclCtx });
-    Role = dataAccess.Role;
+    RoleMember = dataAccess.RoleMember;
   });
 
   it('finds all matching roles', async () => {
-    const roles = await Role.allRolesByIdentities(
+    const members = await RoleMember.allRoleMembershipByIdentities(
       'DAADAADAA@AdobeOrg',
       ['imsOrgID:DAADAADAA@AdobeOrg', 'imsID:1234@5678.e'],
     );
-    console.log('roles', roles);
-    expect(roles).to.have.length(3);
+    console.log('roles', members);
+    expect(members).to.have.length(3);
 
-    const roleNames = new Set(roles.map((role) => role.name));
-    expect(roleNames).to.deep.equal(new Set(['foo-role', 'bar-role', 'far-role']));
+    const roles = await Promise.all(members.map(async (m) => m.getRole()));
+    const roleNames = roles.map((r) => r.getName());
+    expect(new Set(roleNames)).to.deep.equal(new Set(['foo-role', 'bar-role', 'far-role']));
   });
 });

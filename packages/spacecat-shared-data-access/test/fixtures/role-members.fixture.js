@@ -10,17 +10,27 @@
  * governing permissions and limitations under the License.
  */
 
-import BaseCollection from '../base/base.collection.js';
+const roleMembers = [
+  {
+    imsOrgId: 'DAADAADAA@AdobeOrg',
+    identity: 'imsOrgID:DAADAADAA@AdobeOrg',
+    roleId: '1d6b2f29-4d2d-405e-aad6-1f62e6933c39',
+  },
+  {
+    imsOrgId: 'DAADAADAA@AdobeOrg',
+    identity: 'imsOrgID:DAADAADAA@AdobeOrg',
+    roleId: '2d6b2f29-4d2d-405e-aad6-1f62e6933c39',
+  },
+  {
+    imsOrgId: 'DAADAADAA@AdobeOrg',
+    identity: 'imsID:1234@5678.e',
+    roleId: '3d6b2f29-4d2d-405e-aad6-1f62e6933c39',
+  },
+  {
+    imsOrgId: '12345678@AdobeOrg',
+    identity: 'imsID:1234@5678.e',
+    roleId: '4d6b2f29-4d2d-405e-aad6-1f62e6933c39',
+  },
+];
 
-/**
- * RoleCollection - A collection class responsible for managing Role entities.
- * Extends the BaseCollection to provide specific methods for interacting with Role records.
- *
- * @class RoleCollection
- * @extends BaseCollection
- */
-class RoleCollection extends BaseCollection {
-  // Specific methods may go here
-}
-
-export default RoleCollection;
+export default roleMembers;
